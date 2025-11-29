@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGCF - Actualiza tus contactos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            background-image: url({{ url_for('static', filename = 'imagenes/fondo_oceano.jpg') }});
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-color: #00166F;
+        }
+
+        #separador_azul {
+            background-color: #00166F;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="contenedor_logo" class="flex-container bg-white p-3">
+        <img src="{{ url_for('static', filename = 'imagenes/logo.png') }}" height="50px" alt="">
+    </div>
+
+    <div id="separador_azul" class="flex-container text-center">
+        <h3 class="py-3 text-white"> Actualiza tus contactos - {{titulo}}</h3>
+    </div>
+
+    <div class="flex-container m-4 p-4 bg-white">
+        
+        <h4>Contactos</h4>
+
+        <div class="table-responsive mb-4">
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Correo</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for correo in correos_bd%}
+                    <tr>
+                        <td><input class="form-control" type="text" value="{{correo.correo}}" disabled></td>
+                        <td>
+                            <form action="/eliminar_contacto/{{correo.id}}" method="post">
+                                <button class="btn btn-danger" type="submit">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {%endfor%}
+
+                <tr>
+                    <form action="/agregar_contacto" method="post">
+                        <input type="hidden" name="nombre_lista" value="{{nombre_lista}}">
+                        <td><input class="form-control" type="email" name="email_nuevo" id="" required></td>
+                        <td> 
+                            <button class="btn btn-success" type="submit">Agregar</button> 
+                        </td>
+                    </form> 
+                </tr>
+
+            </tbody>
+        </table>
+        </div>
+        
+
+        <h4>Solicitudes Pendientes</h4>
+        <p>Las solicitudes del siguiente listado se pueden tardar hasta un periodo de 48 horas en ser procesadas</p>
+
+        <div class="table-responsive mb-4">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Fecha solicitud</th>
+                    <th>Solicitante</th>
+                    <th>Tipo</th>
+                    <th>Correo</th>
+                    <th></th>
+                </tr>
+            </thead>
+            </thead>
+            <tbody>
+                {% for solicitud in solicitudes_bd %}
+                    <tr>
+                        <td>{{solicitud.id}}</td>
+                        <td>{{solicitud.fecha_solicitud}}</td>
+                        <td>{{solicitud.correo_solicitante}}</td>
+                        <td>{{solicitud.tipo_solicitud}}</td>
+                        <td>{{solicitud.correo}}</td>
+                        <td>
+                            <form action="/eliminar_solicitud/{{solicitud.id}}" method="post">
+                                <button type="submit" class="btn btn-danger">Anular</button>
+                            </form>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+
+        <a href="/menu" class="btn btn-primary">Volver</a>
+
+    </div>
+
+
+    {% with mensajes_flash = get_flashed_messages() %}
+        {% if mensajes_flash %}
+            {% for mensaje in mensajes_flash %}
+                <script> alert("{{mensaje}}") </script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+</body>
+
+</html>

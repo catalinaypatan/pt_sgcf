@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGCF - Inicio de sesión</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            background-image: url({{ url_for('static', filename = 'imagenes/fondo_oceano.jpg') }});
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-color: #00166F;
+        }
+        #separador_azul {
+            background-color: #00166F;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="contenedor_logo" class="flex-container bg-white p-3">
+        <img src="{{ url_for('static', filename = 'imagenes/logo.png') }}" height="50px" alt="">
+    </div>
+
+    <div id="separador_azul" class="flex-container text-center">
+        <h3 class="py-2 text-white">ㅤ</h3>
+    </div>
+
+    <div class="container m-0">
+
+        <div class="row">
+            <div class="col-12 col-xl-6">
+                <div id="contenedor_login" class="flex-container bg-white m-4 p-4">
+                    <h4 class="mb-4">Ingrese el código de verificación recibido</h4>
+
+                    <form action="/validar_codigo_verificacion" method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label" for="code">Código de verificación</label>
+                            <input class="form-control" type="text" name="code" id="code">
+                        </div>
+
+                        <button class="btn btn-warning" type="submit">Iniciar sesión</button>
+                    </form>
+                    <a class="btn btn-primary mt-4" href="/inicio_sesion">Volver</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-6">
+        </div>
+        
+    </div>
+
+    {% with mensajes_flash = get_flashed_messages() %}
+        {% if mensajes_flash %}
+            {% for mensaje in mensajes_flash %}
+                <script> alert("{{mensaje}}") </script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+</body>
+
+</html>
