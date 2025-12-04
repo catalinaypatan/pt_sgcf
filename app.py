@@ -135,7 +135,7 @@ def validar_codigo_verificacion():
 
     email_verificacion = datos_verificacion.get("email")
 
-    usuarios_en_bd = consultar_base_datos(f"select * from usuarios where correo = '{email_verificacion}'")
+    usuarios_en_bd = consultar_base_datos(f"select usuarios.*, empresas.nombre as nombre_empresa from usuarios, empresas  where correo = '{email_verificacion}' and usuarios.match_code_empresa = empresas.match_code")
 
     usuario = usuarios_en_bd[0]
 
