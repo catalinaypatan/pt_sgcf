@@ -91,7 +91,7 @@ def generar_codigo_verificacion():
     usuarios_en_bd = consultar_base_datos(f"select * from usuarios where correo ='{email}'")
 
     if len(usuarios_en_bd) == 0:
-        flask.flash("⚠️ El correo entregado no cuenta con acceso al sistema")
+        flask.flash("El correo entregado no cuenta con acceso al sistema")
         return flask.redirect('/inicio_sesion')
 
     codigo_verificacion = secrets.token_urlsafe(5)
@@ -122,14 +122,14 @@ def validar_codigo_verificacion():
 
     datos_verificacion = flask.session.get("datos_verificacion")
     if datos_verificacion == None:
-        flask.flash("⚠️ El código de verificación ha vencido")
+        flask.flash(" El código de verificación ha vencido")
         return flask.redirect("/inicio_sesion")
 
 
     codigo_verificacion = datos_verificacion.get("codigo_verificacion")
 
     if codigo_verificacion != codigo:
-        flask.flash("⚠️ El código de verificación ingresado es incorrecto")
+        flask.flash(" El código de verificación ingresado es incorrecto")
         return flask.redirect("/codigo_verificacion")
 
 
@@ -209,7 +209,7 @@ def agregar_contacto():
     nombre_lista = campos_formulario.get('nombre_lista')
 
     if nombre_lista not in ["Docu", "Copy of BL", "Arrival Notice"]:
-        flask.flash('⚠️ La lista asociada a la solicitudd no es una lista valida')
+        flask.flash(' La lista asociada a la solicitud no es una lista válida')
         return flask.redirect(flask.request.referrer)
 
     match_code = usuario_logeado.get('match_code_empresa')
@@ -225,7 +225,7 @@ def agregar_contacto():
     """)
 
     if len(correos_bd) > 0:
-        flask.flash(f'⚠️ El contacto {correo_nuevo} que solicito agregar ya existe')
+        flask.flash(f' El contacto {correo_nuevo} que solicitó agregar ya existe')
         return flask.redirect(flask.request.referrer)
 
     solicitudes_bd = consultar_base_datos(f"""
@@ -240,7 +240,7 @@ def agregar_contacto():
     """)
 
     if len(solicitudes_bd) > 0:
-        flask.flash(f'⚠️ Ya existe una solicitud pendiente para la inclusión del contacto {correo_nuevo}')
+        flask.flash(f' Ya existe una solicitud pendiente para la inclusión del contacto {correo_nuevo}')
         return flask.redirect(flask.request.referrer)
 
     ejecutar_base_datos(f"""
@@ -282,7 +282,7 @@ def eliminar_contacto(id_correo):
     """)
 
     if len(correos_actuales_bd) == 0:
-        flask.flash(f'🛑 No se encontro un correo con un id coincidente que este asociado a la empresa del usuario')
+        flask.flash(f' No se encontró un correo con un id coincidente que este asociado a la empresa del usuario')
         return flask.redirect(flask.request.referrer)
 
     correo_bd = correos_actuales_bd[0]
@@ -306,7 +306,7 @@ def eliminar_contacto(id_correo):
     """)
 
     if len(solicitudes_bd) > 0:
-        flask.flash(f'⚠️ Ya existe una solicitud pendiente para la eliminación del contacto {correo_a_borrar}')
+        flask.flash(f' Ya existe una solicitud pendiente para la eliminación del contacto {correo_a_borrar}')
         return flask.redirect(flask.request.referrer)
 
     ejecutar_base_datos(f"""
