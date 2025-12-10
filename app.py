@@ -8,12 +8,12 @@ import secrets
 #test
 dotenv.load_dotenv()
 
-app =  flask.Flask('TrabajoListas')
+app =  flask.Flask("TrabajoListas")
 app.secret_key = os.getenv("clave_secreta_flask")
 
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_PERMANENT"] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(minutes=15)
+app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(minutes=15)
 
 
 #----------------------------------------------------------------
@@ -179,16 +179,16 @@ def enviar_a_html_actualiza_tus_contactos(nombre_lista):
         select * 
         from correos_actuales 
         where 
-            match_code_empresa = '{usuario_logeado.get("match_code_empresa")}' 
-            and nombre_lista = '{nombre_lista}' 
+            match_code_empresa = "{usuario_logeado.get("match_code_empresa")}" 
+            and nombre_lista = "{nombre_lista}"
     """)
 
     solicitudes_bd = consultar_base_datos(f"""
         select * 
         from solicitudes 
         where 
-            match_code_empresa = '{usuario_logeado.get("match_code_empresa")}' 
-            and nombre_lista = '{nombre_lista}' 
+            match_code_empresa = "{usuario_logeado.get("match_code_empresa")}" 
+            and nombre_lista = "{nombre_lista}"
             and estado_solicitud = 'pendiente'
     """)
 
@@ -196,7 +196,7 @@ def enviar_a_html_actualiza_tus_contactos(nombre_lista):
 
 
 #----------------------------------------------------------------
-@app.route('/agregar_contacto', methods=['post'])
+@app.route("/agregar_contacto", methods=["post"])
 def agregar_contacto():
 
     usuario_logeado = flask.session.get("usuario_logeado")
@@ -205,42 +205,42 @@ def agregar_contacto():
         return flask.redirect("/inicio_sesion")
 
     campos_formulario = flask.request.form
-    correo_nuevo = campos_formulario.get('email_nuevo')
-    nombre_lista = campos_formulario.get('nombre_lista')
+    correo_nuevo = campos_formulario.get("email_nuevo")
+    nombre_lista = campos_formulario.get("nombre_lista")
 
     if nombre_lista not in ["Docu", "Copy of BL", "Arrival Notice"]:
-        flask.flash(' La lista asociada a la solicitud no es una lista válida')
+        flask.flash( "La lista asociada a la solicitud no es una lista válida")
         return flask.redirect(flask.request.referrer)
 
-    match_code = usuario_logeado.get('match_code_empresa')
-    correo_solicitante = usuario_logeado.get('correo')
+    match_code = usuario_logeado.get("match_code_empresa")
+    correo_solicitante = usuario_logeado.get("correo")
 
     correos_bd = consultar_base_datos(f"""
         select * 
         from correos_actuales 
         where 
-            correo = '{correo_nuevo}' 
-            and match_code_empresa = '{match_code}' 
-            and nombre_lista = '{nombre_lista}'
+            correo = "{correo_nuevo}" 
+            and match_code_empresa = "{match_code}" 
+            and nombre_lista = "{nombre_lista}"
     """)
 
     if len(correos_bd) > 0:
-        flask.flash(f' El contacto {correo_nuevo} que solicitó agregar ya existe')
+        flask.flash(f" El contacto {correo_nuevo} que solicitó agregar ya existe")
         return flask.redirect(flask.request.referrer)
 
     solicitudes_bd = consultar_base_datos(f"""
         select * 
         from solicitudes 
         where 
-            correo = '{correo_nuevo}' 
-            and match_code_empresa = '{match_code}' 
-            and nombre_lista = '{nombre_lista}'  
-            and tipo_solicitud = 'agregar' 
-            and estado_solicitud = 'pendiente'
+            correo = "{correo_nuevo}" 
+            and match_code_empresa = "{match_code}" 
+            and nombre_lista = "{nombre_lista}"  
+            and tipo_solicitud = "agregar" 
+            and estado_solicitud = "pendiente"
     """)
 
     if len(solicitudes_bd) > 0:
-        flask.flash(f' Ya existe una solicitud pendiente para la inclusión del contacto {correo_nuevo}')
+        flask.flash(f" Ya existe una solicitud pendiente para la inclusión del contacto {correo_nuevo}")
         return flask.redirect(flask.request.referrer)
 
     ejecutar_base_datos(f"""
@@ -252,12 +252,12 @@ def agregar_contacto():
             nombre_lista, 
             estado_solicitud
         ) values (
-            '{correo_solicitante}', 
-            'agregar', 
-            '{correo_nuevo}', 
-            '{match_code}', 
-            '{nombre_lista}', 
-            'pendiente'
+            "{correo_solicitante}", 
+            "agregar", 
+            "{correo_nuevo}", 
+            "{match_code}", 
+            "{nombre_lista}", 
+            "pendiente"
         )
     """)
 
@@ -265,7 +265,7 @@ def agregar_contacto():
 
 
 #----------------------------------------------------------------
-@app.route('/eliminar_contacto/<id_correo>', methods=['post'])
+@app.route("/eliminar_contacto/<id_correo>", methods=["post"])
 def eliminar_contacto(id_correo):
 
     usuario_logeado = flask.session.get("usuario_logeado")
@@ -278,7 +278,7 @@ def eliminar_contacto(id_correo):
         from correos_actuales 
         where 
             id = {id_correo} 
-            and match_code_empresa = '{usuario_logeado.get('match_code_empresa')}'
+            and match_code_empresa = '{usuario_logeado.get("match_code_empresa")}'
     """)
 
     if len(correos_actuales_bd) == 0:
@@ -288,25 +288,25 @@ def eliminar_contacto(id_correo):
     correo_bd = correos_actuales_bd[0]
 
     #datos de la solicitud
-    correo_a_borrar = correo_bd.get('correo')
-    nombre_lista = correo_bd.get('nombre_lista')
-    match_code = usuario_logeado.get('match_code_empresa')
-    correo_solicitante = usuario_logeado.get('correo')
+    correo_a_borrar = correo_bd.get("correo")
+    nombre_lista = correo_bd.get("nombre_lista")
+    match_code = usuario_logeado.get("match_code_empresa")
+    correo_solicitante = usuario_logeado.get("correo")
 
 
     solicitudes_bd = consultar_base_datos(f"""
         select * 
         from solicitudes 
         where 
-            correo = '{correo_a_borrar}' 
-            and match_code_empresa = '{match_code}' 
-            and nombre_lista = '{nombre_lista}' 
-            and tipo_solicitud = 'eliminar' 
-            and estado_solicitud = 'pendiente'
+            correo = "{correo_a_borrar}" 
+            and match_code_empresa = "{match_code}" 
+            and nombre_lista = "{nombre_lista}" 
+            and tipo_solicitud = "eliminar" 
+            and estado_solicitud = "pendiente"
     """)
 
     if len(solicitudes_bd) > 0:
-        flask.flash(f' Ya existe una solicitud pendiente para la eliminación del contacto {correo_a_borrar}')
+        flask.flash(f" Ya existe una solicitud pendiente para la eliminación del contacto {correo_a_borrar}")
         return flask.redirect(flask.request.referrer)
 
     ejecutar_base_datos(f"""
@@ -318,12 +318,12 @@ def eliminar_contacto(id_correo):
             nombre_lista, 
             estado_solicitud
         ) values (
-            '{correo_solicitante}', 
-            'eliminar', 
-            '{correo_a_borrar}', 
-            '{match_code}', 
-            '{nombre_lista}', 
-            'pendiente'
+            "{correo_solicitante}", 
+            "eliminar", 
+            "{correo_a_borrar}", 
+            "{match_code}", 
+            "{nombre_lista}", 
+            "pendiente"
         )
     """)
 
@@ -331,7 +331,7 @@ def eliminar_contacto(id_correo):
 
 
 #----------------------------------------------------------------
-@app.route('/eliminar_solicitud/<id_solicitud>', methods=['post'])
+@app.route("/eliminar_solicitud/<id_solicitud>", methods=["post"])
 def eliminar_solicitud(id_solicitud):
 
     usuario_logeado = flask.session.get("usuario_logeado")
@@ -339,17 +339,17 @@ def eliminar_solicitud(id_solicitud):
     if usuario_logeado == None:
         return flask.redirect("/inicio_sesion")
 
-    match_code = usuario_logeado.get('match_code_empresa')
-    correo_anulador = usuario_logeado.get('correo')
+    match_code = usuario_logeado.get("match_code_empresa")
+    correo_anulador = usuario_logeado.get("correo")
 
     ejecutar_base_datos(f"""
         update solicitudes 
         set 
-            estado_solicitud = 'anulada', 
-            anulada_por = '{correo_anulador}' 
+            estado_solicitud = "anulada", 
+            anulada_por = "{correo_anulador}"
         where 
             id = {id_solicitud} 
-            and match_code_empresa = '{match_code}'
+            and match_code_empresa = "{match_code}"
     """)
 
     return flask.redirect(flask.request.referrer)
